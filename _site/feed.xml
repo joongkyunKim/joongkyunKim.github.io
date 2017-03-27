@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Deep Learning Review - Articles</title>
+    <description>Postings about what i learned and what i have to learn, especially about Deep Learning</description>
+    <link>
+    http://joongkyunKim.github.io</link>
+    
+      
+      <item>
+        <title>[CS224d] Lecture1 Review</title>
+        
+          <description>&lt;p&gt;Deep Learning 학습을 위해 CS224d 강의를 보고 강의의 복습 및 정리를 위해 오늘부터 Review 내용을 정리하기로 했다. CS224d : Deep Learning for Natrual Language Processing(이하 NLP) 강의는 Stanford University에서 진행되었고 지속해서 진행되고 있는 강의로 해외뿐만아니라 우리나라에서도 딥러닝 초보 학습자들에게 인기를 모은 강의이다. 현재 2017년에는 CS224n 강의가 새롭게 진행중이지만, 강의 비디오를 볼 수 없는 관계로 youtube에서 강의를 볼 수 있는 2016년 강의인 CS224d를 학습하고 정리한다.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Wed, 22 Mar 2017 21:30:00 +0900</pubDate>
+        <link>
+        http://joongkyunKim.github.io/cs224d-lecture1</link>
+        <guid isPermaLink="true">http://joongkyunKim.github.io/cs224d-lecture1</guid>
+      </item>
+      
+    
+  </channel>
+</rss>
