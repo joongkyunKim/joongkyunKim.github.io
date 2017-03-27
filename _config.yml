@@ -26,8 +26,8 @@ baseurl: /
 
 # Permalinks
 permalink: /:title
-# permalink: /author/:username
-# permalink: /tag/:tag
+#permalink: /author/:username
+#permalink: /tag/:tag
 
 
 # gems and other configs
@@ -56,7 +56,7 @@ exclude: [vendor]
 safe: false
 lsi: false
 username: joongkyunKim
-#repo: jasper
+repo: joongkyunKim.github.io
 branch: master
 #destination: ../jasper-pages/
 production_url:  https://joongkyunKim.github.io
