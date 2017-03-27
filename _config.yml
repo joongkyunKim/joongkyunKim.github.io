@@ -58,7 +58,7 @@ lsi: false
 username: joongkyunKim
 repo: joongkyunKim.github.io
 branch: master
-#destination: ../jasper-pages/
+destination: ../blog-pages/
 production_url:  https://joongkyunKim.github.io
 source_url:      https://github.com/joongkyunKim
 

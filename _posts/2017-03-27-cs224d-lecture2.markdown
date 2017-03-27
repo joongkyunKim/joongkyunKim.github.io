@@ -1,0 +1,15 @@
+---
+layout: post
+cover: 'assets/images/cover1.jpg'
+title:  "[CS224d] Lecture2 Review"
+date:   2017-03-27 14:30:00
+tags: NLP cs224d
+subclass: 'post tag-NLP tag-cs224'
+categories: 'joongkyunKim'
+navigation: True
+---
+
+
+test
+test
+test
