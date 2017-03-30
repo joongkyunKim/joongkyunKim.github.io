@@ -12,7 +12,168 @@
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
-	  <title>[CS224d] Lecture1 Review</title>
+	  <title>[CS224d] Lecture2 : Word2vec</title>
+	  <link>//cs224d-lecture2</link>
+	  <author>joongkyunKim</author>
+	  <pubDate>2017-03-27T00:00:00+09:00</pubDate>
+	  <guid>//cs224d-lecture2</guid>
+	  <description><![CDATA[
+	     <p>이번 포스팅에서는 lecture1:introduction 에 이어서 lecture2: Word vectors에 관해서 내용을 정리해보도록 한다. 우선 지난 시간에 했던 내용을 잠시 상기시켜보면, Natural Language Processing(이하 NLP)와 Deep Learning에 대해서 개략적인 내용을 살펴봤으며, 딥러닝을 NLP에 적용했을 때 기존의 해결 방식과 차이점을 비교해 보았다. 여기서 결정적으로 중요했던 부분은 딥러닝에 NLP를 적용하기 위해서는 글자 하나하나를 벡터의 형태로 나타내야 한다는 공통점을 보였다. 이번 강의에서는 어떻게 글자를 벡터로 나타내는지에 대한 내용이다.</p>
+
+<ul>
+  <li>Lecture slide : <a href="http://joongkyunKim.github.io/downloads/lec2/LectureSlide2.pdf">LectureSlide2</a></li>
+  <li>Lecture note(lecture1과 동일)  : <a href="http://joongkyunKim.github.io/downloads/lec1/LectureNote1.pdf">Lecturenote1</a></li>
+  <li>Video Clip    : <a href="https://www.youtube.com/watch?v=aRqn8t1hLxs&amp;index=2&amp;list=PLlJy-eBtNFt4CSVWYqscHDdP58M3zFHIG&amp;t=3327s">2강</a></li>
+</ul>
+
+<h3 id="lecture2--word-vectors">Lecture2 : Word vectors</h3>
+
+<p>컴퓨터가 단어의 의미를 나타내기 위해 활용했던 방법으로 WordNet과 같이 상위-하위어의 관계를 보여주는 분류체계(taxonomy)로 나타내거나 동의어 집합을 보여주는 것이 종종 사용되었다.
+<img src="downloads/lec2/wordnet.png" alt="WordNet" />
+하지만 위의 방식에는 몇몇 문제점이 존재한다. 먼저,’good’ 의 동의어로 나온 adept, expert 등등은 동의어이지만 문맥에 따라 같이 쓰일 수 없다.(<code class="highlighter-rouge">nuance</code>의 차이) 또한 사람들이 하나하나 수작업으로 매칭작업을 진행해줘야하며 단어간의 유사성 계산에 있어서 힘들 수 밖에 없다.</p>
+
+<p>또한 문장 또는 문서에서 해당 단어가 나오는 부분에 1, 아닌 부분에 0으로 만드는 벡터의 경우(아래그림)는 대부분 0으로 구성된 벡터이다. 그래서 아래의 예제와 같이 <code class="highlighter-rouge">motel</code>과 <code class="highlighter-rouge">hotel</code>은 유사한 단어지만 <code class="highlighter-rouge">AND</code> 연산을 시행했을 때 0으로 아무 연관이 없는것 처럼 표현되기도 한다.
+<img src="downloads/lec2/onehot.png" alt="onehot" /></p>
+
+<h6 id="window-based-cooccurence-matrix">Window based cooccurence matrix</h6>
+
+<p>이러한 문제점을 해결하기 위해 제시된 방식이 표현하고자 하는 단어의 이웃(neighbors)를 표현하는 방식이다. 이를 이용해서 표현한 단어들의 벡터의 집합을 <code class="highlighter-rouge">window based cooccurence matrix</code> 라 한다. 아래와 같이 3개의 문장이 있다고 가정하자. 해당 예제에서는 window의 길이를 1로 하고, symmetric한 구조를 가진다. 이렇게되면 focus 하고 있는 단어의 좌/우 1개씩을 window로 설정하는 방식이다. 예를들어 <code class="highlighter-rouge">like</code>라는 단어를 보면, <code class="highlighter-rouge">like</code> 좌우 이웃된 단어들은 첫문장에서 <code class="highlighter-rouge">I</code>,<code class="highlighter-rouge">deep</code> 그리고 두번째 문장에서 <code class="highlighter-rouge">I</code>,<code class="highlighter-rouge">NLP</code> 이다. 이 결과가 아래의 매트릭스에서 counting 된것을 확인할 수 있다. 이렇게 계산된 matrix가 아래와 같고 이는 당연스럽게 symmetric한 matrix 일 수 밖에 없다.</p>
+
+<blockquote>
+  <p>I like deep learning.<br />
+I like NLP.<br />
+I enjoy flying.</p>
+</blockquote>
+
+<p><img src="downloads/lec2/cooccurence.png" alt="cooccurence" /></p>
+
+<p>하지만, 위의 방식에는 큰 문제점이 있다! 단어 수에 따라 matrix의 크기가 기하급수적으로 늘어날 뿐 아니라, matrix의 차원(dimension)이 커지면서 계산시에 매우 비효율적일 수 있다. 이러한 문제를 해결하기 위해 <code class="highlighter-rouge">차원축소</code> 기법이 필요하다</p>
+
+<h6 id="singular-value-decompositionsvd">차원축소기법 : Singular Value Decomposition(SVD)</h6>
+<p>Singular Value Decomposition(이하 SVD) 는 특잇값 분해라고 말하며, 이는 선형대수에서 고유값 분해(eigenvalue decomposition)과 함께 아주 기본적이고 매우 많이 쓰이는 행렬분해 기법이다. <script type="math/tex">U</script>는 <script type="math/tex">AA^T</script>를 고유값분해(eigendecomposition)해서 얻어진 직교행렬(orthogonal matrix)로 <script type="math/tex">U</script>의 열벡터들을 <script type="math/tex">A</script>의 left singular vector라 부른다.또한 <script type="math/tex">V</script>는 <script type="math/tex">A^TA</script>를 고유값분해해서 얻어진 직교행렬로서 <script type="math/tex">V</script>의 열벡터들을 <script type="math/tex">A</script>의 right singular vector라 부른다.마지막으로, <script type="math/tex">Σ</script>는 <script type="math/tex">AA^T</script>, <script type="math/tex">A^TA</script>를 고유값분해해서 나오는 고유값(eigenvalue)들의 square root를 대각원소로 하는 m x n 직사각 대각행렬로 그 대각원소들을 <script type="math/tex">A</script>의 특이값(singular value)이라 부른다. (<em>좀더 자세한 내용은 아래 출처인 ‘다크프로그래머’ 블로그를 참조하기 바란다. SVD에 대해 아주 꼼꼼하고 다방면으로 잘 정리된 블로그이다.</em>)</p>
+
+<p>출처: http://darkpgmr.tistory.com/106 (다크프로그래머)</p>
+
+<p>이제 다시 강의내용으로 돌아와서 아래의 SVD 분해 형태를 살펴보자
+<img src="downloads/lec2/SVD.png" alt="SVD" />
+위의 케이스는 full SVD형태이지만 잘 쓰지 않는다. 아래와 같이 reduced SVD를 일반적으로 쓰게 되는데, 특잇값중에서 0이 아닌 것들을 모아서 좀 더 압축된 형태로 분해하게 된다. (<em>불필요한(덜 중요한) 정보를 감안하지 않는다고 생각하면 될 것 같다.</em>) 이와 같이 축약된 형태의 SVD는 데이터 압축 등에 종종 사용되니 알아두도록 하자!
+최종적으로, 우리도 <code class="highlighter-rouge">window based cooccurence matrix</code> 를 축약된 SVD를 이용해서 차원 축소를 시킬것이다.</p>
+
+<p>이 차원 축소 과정을 아래의 파이썬 코드로 실행해 볼 수 있다.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c">##python 3.0 이상 버전입니다.</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+<span class="n">la</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span>
+<span class="n">words</span> <span class="o">=</span> <span class="p">[</span><span class="s">"I"</span><span class="p">,</span> <span class="s">"like"</span><span class="p">,</span><span class="s">"enjoy"</span><span class="p">,</span><span class="s">"deep"</span><span class="p">,</span><span class="s">"learning"</span><span class="p">,</span><span class="s">"NLP"</span><span class="p">,</span><span class="s">"flying"</span><span class="p">,</span><span class="s">"."</span><span class="p">]</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
+
+<span class="n">U</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">Vh</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">)):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">U</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">U</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">words</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">([</span><span class="o">-</span><span class="mf">0.8</span><span class="p">,</span><span class="mf">0.2</span><span class="p">,</span><span class="o">-</span><span class="mf">0.8</span><span class="p">,</span><span class="mf">0.8</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="n">U</span><span class="p">[</span><span class="mi">0</span><span class="p">,])</span></code></pre></figure>
+
+<p>이 코드의 결과는 아래와 같이 나온다.
+<img src="downloads/lec2/SVDresult.png" alt="SVDresult" /></p>
+
+<p>\[ U[0,] =\begin{pmatrix} -0.52412493 \\ -0.57285914 \\ 0.0954463 \\  0.38322849 \\ -0.17696338 \\ -0.17609218 \\ -0.4191856 \\ -0.05577027\end{pmatrix}
+\]</p>
+
+<p>위의 그림을 보면, U행렬을 첫열과 둘째열을 plot으로 나타낸것이다. 기하학적 의미를 간략하게 살펴보면 위에서 구한 <code class="highlighter-rouge">window based cooccurence matrix</code> 에서 단어간의 유사도를 살펴볼 수 있다. 이는 아래 그림의 예제에서 살펴볼 수 있는데, 동일하게 SVD를 통해서 plot한 결과가 같은 단어의 시제끼리 비슷한 위치에 존재하는 것을 알 수 있다.
+<img src="downloads/lec2/SVDexp.png" alt="SVDexp" />
+출처 : An Improved Model of Seman4c Similarity Based on Lexical Co-Occurrence.Rohde et al. 2005</p>
+
+<p>그리고 이렇게 SVD 과정을 거치게 되면 아래의 벡터와 같이 기존에는 0이 많은 sparse 한 행렬에서 dense 한 행렬로 변환될 수 있다. (<em>dense 한 행렬을 이용하여 모델링 할 경우 robust한 모형이 나올 수 있다.</em>)
+하지만, SVD의 단점도 존재한다. 계산 비용이 너무 크게 들기도 하며(매트릭스 크기가 커짐에 따라), 새로운 단어나 문서가 존재하면 새롭게 매르틱스를 구한 후, SVD를 해야한다는 점을 들 수 있다.</p>
+
+<h6 id="word2vec-">word2vec 기초</h6>
+<p>자~ 이제 위의 내용을 바탕으로 진짜 이번 강의에서 다루고자 한 word2vec 에 관한 내용을 정리해보자. 이 방법은 기존의 단순한 동시발생(cooccurrence)를 카운팅하는것이 아니라 특정 크기의 window를 기반으로 주변 단어를 예측하고자 하는 방법이다. 우선 방식은 아래의 그림과 같다. 예를들어 window의 길이가 2라고 가정하자. 그러면 아래와 같이 나타낼 수 있다. 검은 줄을 하나하나의 단어라고 하면 파란색의 window와 같이 중심단어를 기준으로 좌우 2개씩 예측을 하고, window가 한칸 넘어가서 빨간색의 window와 같이 예측하고, 이런식으로 문서의 끝까지 진행되는 것을 의미한다.
+<img src="downloads/lec2/word2vec.png" alt="word2vec" />
+여기서 적용되는 목적함수(objective function)는 중심 단어가 주어졌을 때 context 단어(<em>정확한건지는 모르겠으나 개인적인 이해로는 window 내의 다른 단어가 context 단어라고 생각된다</em>)가 나올 로그 확률을 최대화 하는 함수를 목적함수로 가진다. 여기서 <script type="math/tex">\theta</script> 는 우리가 최적화 하려고하는 모든 변수들을 나타낸다.
+<img src="downloads/lec2/word2vecobjfun.png" alt="word2vecobjfun" /></p>
+
+<p>여기에서
+<script type="math/tex">p(w_{t+j} | w_t)</script>
+는 다음과 같이 바꿔서 쓸 수 있다.</p>
+
+<p>\[
+p(o | c) = \frac{exp(u_o^T v_c)}{\sum_{w=1}^W exp(u_w^T v_c)} — (1)
+\]</p>
+
+<p>여기서 o는 outside(or output) 단어의 index(id) 이며, c는 중심단어의 index를 나타낸다. 또한 <script type="math/tex">u</script>와 <script type="math/tex">v</script>는 각각 outside 단어의 중심단어 벡터와 중심단어의 outside 벡터를 나타낸다..(<em>이부분은 명확히 이해가 되지 않는 부분이다. 더 자세한 벡터에 대한 설명이 없어서 추후 강의를 들어야 이해가 될것으로보인다. 본인이 이해하기엔 u는 예측하고자하는(outside)단어에서의 중심단어를 나타내는 벡터이며, v는 반대로 중심단어에서 예측하고자하는(outside)단어의 벡터를 나타내는 것으로보인다.</em>)</p>
+
+<p>여기서 중요한것은 각각의 단어는 위와 같이 <script type="math/tex">u</script>, <script type="math/tex">v</script> 라는 2개의 관점의 벡터를 가진다는점!
+(아래는 강의에 나온 표현을 그대로..)</p>
+
+<blockquote>
+  <p>1 vector when we represent it as an outside word -&gt; <script type="math/tex">u</script> <br />
+  1 vector as we trying to predict the outside word -&gt; <script type="math/tex">v</script></p>
+</blockquote>
+
+<p>지금까지 목적함수와 목적함수에 들어가있는 로그 확률의 식을 알아봤다. 이제 우리는 목적함수의 최적화 문제를 풀어야한다. 해당 목적함수는 로그 확률의 최대값을 구하는 것이며, 여기에서 우리는 <code class="highlighter-rouge">gradient</code> 방식을 사용할 것이다. <code class="highlighter-rouge">gradient</code> 방식은 대게 목적함수를 최소화(minimize) 할때 <code class="highlighter-rouge">gradient descent</code> 방식을 많이 사용한다. 수식을 사용하지 않고 직관적으로 설명을 하면, 특정 목적함수의 <code class="highlighter-rouge">gradient</code>(쉽게 기울기) 를 이용해서 이 기울기의 반대방향으로 계속해서 이동하다보면 극소(이는 local minimum일 수도, global minimum일 수도)가 되는 곳에 도달한다는 알고리즘이다(<em>gradient descent 방법에 대해 자세히 알고 싶다면 <a href="http://darkpgmr.tistory.com/133">Gradient Descent  탐색 방법</a>을 참고하기 바란다</em>). <code class="highlighter-rouge">Gradient</code> 최적화 방법을 사용하기 위해 우리는 목적함수의 <code class="highlighter-rouge">gradient</code>를 구할 줄 알아야 한다.
+여기서 기본적으로 <code class="highlighter-rouge">chain rule</code> 을 알아야 하는데 간단하게 언급하면 <script type="math/tex">y=f(u)</script> 이고 <script type="math/tex">u=g(x)</script> 일때 즉, <script type="math/tex">y = f(g(x))</script> 일때,
+\[
+\frac{dy}{dx} = \frac{dy}{du} \frac{du}{dx}<br />
+\]
+로 나타 낼 수 있는것이다. 이는 고등학교때 합성함수의 미분을 배우면서 지나치며 배워온 지식이니 간단하다!
+자 이제 목적함수의 <code class="highlighter-rouge">gradient</code>를 구해보자. 위에서 정의한 (1) 식에서 <script type="math/tex">v_c</script>로 편미분을 한다. <script type="math/tex">v_c</script>로 편미분을 하는 것은 위에서 언급한 것과 같이 <script type="math/tex">v</script> 벡터가 우리가 예측하고자 하는 단어의 벡터를 나타내고 있으며 이것이 파라미터인 <script type="math/tex">\theta</script>에 depend한 변수이므로 이에 대한 <code class="highlighter-rouge">gradient</code>를 구하는 것이다.</p>
+
+<p>\[
+\frac{\partial}{\partial v_c}(\log exp(u_o^T v_c) - \log \sum_{w=1}^W exp(u_w^T v_c))
+\]</p>
+
+<p>\[
+= \frac{\partial}{\partial v_c}(u_o^T v_c) - \frac{\partial}{\partial v_c}\color{red}{\log} \color{blue}{(\sum_{w=1}^W exp(u_w^T v_c)})
+\]</p>
+
+<p>\[
+= (u_o) - \frac{\partial}{\partial v_c}\color{red}{f}\color{blue}{(g(v_c))}
+\]</p>
+
+<p>여기서 <script type="math/tex">u_o</script> 를 제외한 오른쪽 부분을 따로 <code class="highlighter-rouge">chain rule</code>을 이용해서 다음과 같이 구할 수 있다.</p>
+
+<p>\[
+\frac{\partial}{\partial v_c}\color{red}{f}\color{blue}{(z)} =
+\frac{\partial \color{red}{f}\color{blue}{(z)}}{\partial \color{blue}{z}}
+\frac{\partial \color{blue}{g(v_c)}}{\partial v_c} =
+\frac{1}{\sum_{w=1}^W exp(u_w^T v_c)}* \frac{\partial}{\partial v_c}{(\sum_{x=1}^W exp(u_x^T v_c)})
+\]</p>
+
+<p>\[
+= \frac{1}{\sum_{w=1}^W exp(u_w^T v_c)}* {\sum_{x=1}^W exp(u_x^T v_c)}* \frac{\partial}{\partial v_c}(u_x^T v_c)
+= \frac{\sum_{x=1}^W exp(u_x^T v_c)}{\sum_{w=1}^W exp(u_w^T v_c)}* (u_x)
+\]</p>
+
+<p>위의 식을 최종적으로 정리하면 아래와 같이 간략하게 나타낼 수 있다.</p>
+
+<p>\[
+u_o - \sum_{x=1}^W \frac{exp(u_x^T v_c)}{\sum_{w=1}^W exp(u_w^T v_c)} * u_x = u_o - \sum_{x=1}^W p(x | c) u_x
+\]</p>
+
+<p>최종적으로 목적함수가 위와 같이 <code class="highlighter-rouge">gradient function</code> 으로 나타났다. 여기서 <script type="math/tex">W</script> 는 전체 단어의 수로 수백만개까지 갈 수 있어서 강의에서는 <code class="highlighter-rouge">very expensive function to compute</code> 이라 얘기한다. 그래서 이는 approximation 과 normalization 이 필요하다. (<em>이는 과제에서 다뤄질것으로 보인다..</em>)</p>
+
+<h6 id="summary">Summary</h6>
+<p>2강에서는 단어를 어떻게 벡터의 형태로 나타낼 수 있는지에 대해서 간략하게 알아봤다. 벡터로 나타내는 방식에는 <code class="highlighter-rouge">window based cooccurence matrix</code> 가 있으며, 이 매트릭스를 이용해 SVD를 진행하여 기하학적 의미도 살펴봤다. 그리고 <code class="highlighter-rouge">word2vec</code> 알고리즘을 진행하기 위해 목적함수와 확률식, 최적화를 위한 <code class="highlighter-rouge">gradient</code> 도출까지 진행해보았다. 이러한 기초 지식을 가지고 다음강에서부터는 word2vec를 통해 나타난 결과의 의미와, <code class="highlighter-rouge">GloVe</code> 와 같은 다른 형태의 word vector 표현 방식을 알아보도록 하겠다. 끝~</p>
+
+
+	  ]]></description>
+	</item>
+
+	<item>
+	  <title>[CS224d] Lecture1 : Intro to NLP&Deep Learning</title>
 	  <link>//cs224d-lecture1</link>
 	  <author>joongkyunKim</author>
 	  <pubDate>2017-03-22T21:30:00+09:00</pubDate>
@@ -88,31 +249,6 @@
 <h6 id="conclusion">Conclusion</h6>
 <p>이번시간에는 NLP의 기본적인 개념과 응용 분야, 딥러닝의 발전 이유와 함께 실제 NLP에서 딥러닝이 어떠한 방식으로 적용되고 있는지 개략적인 부분을 살펴봤다. 딥러닝이 적용되면서 기존 NLP 방식과 달리 벡터를 이용하여 이를 Neural Network 에 적용해 최종적인 원하는 결과를 도출하는 공통적인 모습을 보았다.
 다음시간에는 실제 글자와 단어가 어떻게 벡터로 표현이 되는지 word2vec에 대해서 알아보겠다. 끝~</p>
-
-
-	  ]]></description>
-	</item>
-
-	<item>
-	  <title>Welcome to Jekyll!</title>
-	  <link>//welcome-to-jekyll0</link>
-	  <author>joongkyunKim</author>
-	  <pubDate>2016-11-26T12:30:27+09:00</pubDate>
-	  <guid>//welcome-to-jekyll0</guid>
-	  <description><![CDATA[
-	     <p>You’ll find this post in your <code class="highlighter-rouge">_posts</code> directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run <code class="highlighter-rouge">jekyll serve</code>, which launches a web server and auto-regenerates your site when a file is updated.</p>
-
-<p>To add new posts, simply add a file in the <code class="highlighter-rouge">_posts</code> directory that follows the convention <code class="highlighter-rouge">YYYY-MM-DD-name-of-post.ext</code> and includes the necessary front matter. Take a look at the source for this post to get an idea about how it works.</p>
-
-<p>Jekyll also offers powerful support for code snippets:</p>
-
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">print_hi</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
-  <span class="nb">puts</span> <span class="s2">"Hi, </span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">"</span>
-<span class="k">end</span>
-<span class="n">print_hi</span><span class="p">(</span><span class="s1">'Tom'</span><span class="p">)</span>
-<span class="c1">#=&gt; prints 'Hi, Tom' to STDOUT.</span></code></pre></figure>
-
-<p>Check out the <a href="http://jekyllrb.com/docs/home">Jekyll docs</a> for more info on how to get the most out of Jekyll. File all bugs/feature requests at <a href="https://github.com/jekyll/jekyll">Jekyll’s GitHub repo</a>. If you have questions, you can ask them on <a href="https://talk.jekyllrb.com/">Jekyll Talk</a>.</p>
 
 
 	  ]]></description>

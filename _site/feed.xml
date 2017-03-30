@@ -8,7 +8,22 @@
     
       
       <item>
-        <title>[CS224d] Lecture1 Review</title>
+        <title>[CS224d] Lecture2 : Word2vec</title>
+        
+          <description>&lt;p&gt;이번 포스팅에서는 lecture1:introduction 에 이어서 lecture2: Word vectors에 관해서 내용을 정리해보도록 한다. 우선 지난 시간에 했던 내용을 잠시 상기시켜보면, Natural Language Processing(이하 NLP)와 Deep Learning에 대해서 개략적인 내용을 살펴봤으며, 딥러닝을 NLP에 적용했을 때 기존의 해결 방식과 차이점을 비교해 보았다. 여기서 결정적으로 중요했던 부분은 딥러닝에 NLP를 적용하기 위해서는 글자 하나하나를 벡터의 형태로 나타내야 한다는 공통점을 보였다. 이번 강의에서는 어떻게 글자를 벡터로 나타내는지에 대한 내용이다.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Mon, 27 Mar 2017 00:00:00 +0900</pubDate>
+        <link>
+        http://joongkyunKim.github.io/cs224d-lecture2</link>
+        <guid isPermaLink="true">http://joongkyunKim.github.io/cs224d-lecture2</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>[CS224d] Lecture1 : Intro to NLP&amp;Deep Learning</title>
         
           <description>&lt;p&gt;Deep Learning 학습을 위해 CS224d 강의를 보고 강의의 복습 및 정리를 위해 오늘부터 Review 내용을 정리하기로 했다. CS224d : Deep Learning for Natrual Language Processing(이하 NLP) 강의는 Stanford University에서 진행되었고 지속해서 진행되고 있는 강의로 해외뿐만아니라 우리나라에서도 딥러닝 초보 학습자들에게 인기를 모은 강의이다. 현재 2017년에는 CS224n 강의가 새롭게 진행중이지만, 강의 비디오를 볼 수 없는 관계로 youtube에서 강의를 볼 수 있는 2016년 강의인 CS224d를 학습하고 정리한다.&lt;/p&gt;
 
@@ -18,21 +33,6 @@
         <link>
         http://joongkyunKim.github.io/cs224d-lecture1</link>
         <guid isPermaLink="true">http://joongkyunKim.github.io/cs224d-lecture1</guid>
-      </item>
-      
-    
-      
-      <item>
-        <title>Welcome to Jekyll!</title>
-        
-          <description>&lt;p&gt;You’ll find this post in your &lt;code class=&quot;highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run &lt;code class=&quot;highlighter-rouge&quot;&gt;jekyll serve&lt;/code&gt;, which launches a web server and auto-regenerates your site when a file is updated.&lt;/p&gt;
-
-</description>
-        
-        <pubDate>Sat, 26 Nov 2016 12:30:27 +0900</pubDate>
-        <link>
-        http://joongkyunKim.github.io/welcome-to-jekyll0</link>
-        <guid isPermaLink="true">http://joongkyunKim.github.io/welcome-to-jekyll0</guid>
       </item>
       
     
