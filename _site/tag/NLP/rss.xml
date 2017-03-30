@@ -50,7 +50,7 @@ I enjoy flying.</p>
 <p>하지만, 위의 방식에는 큰 문제점이 있다! 단어 수에 따라 matrix의 크기가 기하급수적으로 늘어날 뿐 아니라, matrix의 차원(dimension)이 커지면서 계산시에 매우 비효율적일 수 있다. 이러한 문제를 해결하기 위해 <code class="highlighter-rouge">차원축소</code> 기법이 필요하다</p>
 
 <h6 id="singular-value-decompositionsvd">차원축소기법 : Singular Value Decomposition(SVD)</h6>
-<p>Singular Value Decomposition(이하 SVD) 는 특잇값 분해라고 말하며, 이는 선형대수에서 고유값 분해(eigenvalue decomposition)과 함께 아주 기본적이고 매우 많이 쓰이는 행렬분해 기법이다. <script type="math/tex">U</script>는 <script type="math/tex">AA^T</script>를 고유값분해(eigendecomposition)해서 얻어진 직교행렬(orthogonal matrix)로 <script type="math/tex">U</script>의 열벡터들을 <script type="math/tex">A</script>의 left singular vector라 부른다.또한 <script type="math/tex">V</script>는 <script type="math/tex">A^TA</script>를 고유값분해해서 얻어진 직교행렬로서 <script type="math/tex">V</script>의 열벡터들을 <script type="math/tex">A</script>의 right singular vector라 부른다.마지막으로, <script type="math/tex">Σ</script>는 <script type="math/tex">AA^T</script>, <script type="math/tex">A^TA</script>를 고유값분해해서 나오는 고유값(eigenvalue)들의 square root를 대각원소로 하는 m x n 직사각 대각행렬로 그 대각원소들을 <script type="math/tex">A</script>의 특이값(singular value)이라 부른다. (<em>좀더 자세한 내용은 아래 출처인 ‘다크프로그래머’ 블로그를 참조하기 바란다. SVD에 대해 아주 꼼꼼하고 다방면으로 잘 정리된 블로그이다.</em>)</p>
+<p>Singular Value Decomposition(이하 SVD) 는 특잇값 분해라고 말하며, 이는 선형대수에서 고유값 분해(eigenvalue decomposition)과 함께 아주 기본적이고 매우 많이 쓰이는 행렬분해 기법이다. $U$는 $AA^T$를 고유값분해(eigendecomposition)해서 얻어진 직교행렬(orthogonal matrix)로 $U$의 열벡터들을 $A$의 left singular vector라 부른다.또한 $V$는 $A^TA$를 고유값분해해서 얻어진 직교행렬로서 $V$의 열벡터들을 $A$의 right singular vector라 부른다.마지막으로, $\Sigma$는 $AA^T$, $A^TA$를 고유값분해해서 나오는 고유값(eigenvalue)들의 square root를 대각원소로 하는 m x n 직사각 대각행렬로 그 대각원소들을 $A$의 특이값(singular value)이라 부른다. (<em>좀더 자세한 내용은 아래 출처인 ‘다크프로그래머’ 블로그를 참조하기 바란다. SVD에 대해 아주 꼼꼼하고 다방면으로 잘 정리된 블로그이다.</em>)</p>
 
 <p>출처: http://darkpgmr.tistory.com/106 (다크프로그래머)</p>
 
@@ -89,8 +89,7 @@ I enjoy flying.</p>
 <p>이 코드의 결과는 아래와 같이 나온다.
 <img src="downloads/lec2/SVDresult.png" alt="SVDresult" /></p>
 
-<p>\[ U[0,] =\begin{pmatrix} -0.52412493 \\ -0.57285914 \\ 0.0954463 \\  0.38322849 \\ -0.17696338 \\ -0.17609218 \\ -0.4191856 \\ -0.05577027\end{pmatrix}
-\]</p>
+<script type="math/tex; mode=display">U[0,] =\begin{pmatrix} -0.52412493 \\\ -0.57285914 \\\ 0.0954463 \\\  0.38322849 \\\ -0.17696338 \\\ -0.17609218 \\\ -0.4191856 \\\ -0.05577027\end{pmatrix}</script>
 
 <p>위의 그림을 보면, U행렬을 첫열과 둘째열을 plot으로 나타낸것이다. 기하학적 의미를 간략하게 살펴보면 위에서 구한 <code class="highlighter-rouge">window based cooccurence matrix</code> 에서 단어간의 유사도를 살펴볼 수 있다. 이는 아래 그림의 예제에서 살펴볼 수 있는데, 동일하게 SVD를 통해서 plot한 결과가 같은 단어의 시제끼리 비슷한 위치에 존재하는 것을 알 수 있다.
 <img src="downloads/lec2/SVDexp.png" alt="SVDexp" />
@@ -102,68 +101,54 @@ I enjoy flying.</p>
 <h6 id="word2vec-">word2vec 기초</h6>
 <p>자~ 이제 위의 내용을 바탕으로 진짜 이번 강의에서 다루고자 한 word2vec 에 관한 내용을 정리해보자. 이 방법은 기존의 단순한 동시발생(cooccurrence)를 카운팅하는것이 아니라 특정 크기의 window를 기반으로 주변 단어를 예측하고자 하는 방법이다. 우선 방식은 아래의 그림과 같다. 예를들어 window의 길이가 2라고 가정하자. 그러면 아래와 같이 나타낼 수 있다. 검은 줄을 하나하나의 단어라고 하면 파란색의 window와 같이 중심단어를 기준으로 좌우 2개씩 예측을 하고, window가 한칸 넘어가서 빨간색의 window와 같이 예측하고, 이런식으로 문서의 끝까지 진행되는 것을 의미한다.
 <img src="downloads/lec2/word2vec.png" alt="word2vec" />
-여기서 적용되는 목적함수(objective function)는 중심 단어가 주어졌을 때 context 단어(<em>정확한건지는 모르겠으나 개인적인 이해로는 window 내의 다른 단어가 context 단어라고 생각된다</em>)가 나올 로그 확률을 최대화 하는 함수를 목적함수로 가진다. 여기서 <script type="math/tex">\theta</script> 는 우리가 최적화 하려고하는 모든 변수들을 나타낸다.
+여기서 적용되는 목적함수(objective function)는 중심 단어가 주어졌을 때 context 단어(<em>정확한건지는 모르겠으나 개인적인 이해로는 window 내의 다른 단어가 context 단어라고 생각된다</em>)가 나올 로그 확률을 최대화 하는 함수를 목적함수로 가진다. 여기서 $\theta$ 는 우리가 최적화 하려고하는 모든 변수들을 나타낸다.
 <img src="downloads/lec2/word2vecobjfun.png" alt="word2vecobjfun" /></p>
 
 <p>여기에서
-<script type="math/tex">p(w_{t+j} | w_t)</script>
+$p(w_{t+j} | w_t)$
 는 다음과 같이 바꿔서 쓸 수 있다.</p>
 
-<p>\[
-p(o | c) = \frac{exp(u_o^T v_c)}{\sum_{w=1}^W exp(u_w^T v_c)} — (1)
-\]</p>
+<script type="math/tex; mode=display">p(o | c) = \frac{exp(u_o^T v_c)}{\sum_{w=1}^W exp(u_w^T v_c)} --- (1)</script>
 
-<p>여기서 o는 outside(or output) 단어의 index(id) 이며, c는 중심단어의 index를 나타낸다. 또한 <script type="math/tex">u</script>와 <script type="math/tex">v</script>는 각각 outside 단어의 중심단어 벡터와 중심단어의 outside 벡터를 나타낸다..(<em>이부분은 명확히 이해가 되지 않는 부분이다. 더 자세한 벡터에 대한 설명이 없어서 추후 강의를 들어야 이해가 될것으로보인다. 본인이 이해하기엔 u는 예측하고자하는(outside)단어에서의 중심단어를 나타내는 벡터이며, v는 반대로 중심단어에서 예측하고자하는(outside)단어의 벡터를 나타내는 것으로보인다.</em>)</p>
+<p>여기서 o는 outside(or output) 단어의 index(id) 이며, c는 중심단어의 index를 나타낸다. 또한 $u$와 $v$는 각각 outside 단어의 중심단어 벡터와 중심단어의 outside 벡터를 나타낸다..(<em>이부분은 명확히 이해가 되지 않는 부분이다. 더 자세한 벡터에 대한 설명이 없어서 추후 강의를 들어야 이해가 될것으로보인다. 본인이 이해하기엔 u는 예측하고자하는(outside)단어에서의 중심단어를 나타내는 벡터이며, v는 반대로 중심단어에서 예측하고자하는(outside)단어의 벡터를 나타내는 것으로보인다.</em>)</p>
 
-<p>여기서 중요한것은 각각의 단어는 위와 같이 <script type="math/tex">u</script>, <script type="math/tex">v</script> 라는 2개의 관점의 벡터를 가진다는점!
+<p>여기서 중요한것은 각각의 단어는 위와 같이 $u$, $v$ 라는 2개의 관점의 벡터를 가진다는점!
 (아래는 강의에 나온 표현을 그대로..)</p>
 
 <blockquote>
-  <p>1 vector when we represent it as an outside word -&gt; <script type="math/tex">u</script> <br />
-  1 vector as we trying to predict the outside word -&gt; <script type="math/tex">v</script></p>
+  <p>1 vector when we represent it as an outside word -&gt; $u$ <br />
+  1 vector as we trying to predict the outside word -&gt; $v$</p>
 </blockquote>
 
 <p>지금까지 목적함수와 목적함수에 들어가있는 로그 확률의 식을 알아봤다. 이제 우리는 목적함수의 최적화 문제를 풀어야한다. 해당 목적함수는 로그 확률의 최대값을 구하는 것이며, 여기에서 우리는 <code class="highlighter-rouge">gradient</code> 방식을 사용할 것이다. <code class="highlighter-rouge">gradient</code> 방식은 대게 목적함수를 최소화(minimize) 할때 <code class="highlighter-rouge">gradient descent</code> 방식을 많이 사용한다. 수식을 사용하지 않고 직관적으로 설명을 하면, 특정 목적함수의 <code class="highlighter-rouge">gradient</code>(쉽게 기울기) 를 이용해서 이 기울기의 반대방향으로 계속해서 이동하다보면 극소(이는 local minimum일 수도, global minimum일 수도)가 되는 곳에 도달한다는 알고리즘이다(<em>gradient descent 방법에 대해 자세히 알고 싶다면 <a href="http://darkpgmr.tistory.com/133">Gradient Descent  탐색 방법</a>을 참고하기 바란다</em>). <code class="highlighter-rouge">Gradient</code> 최적화 방법을 사용하기 위해 우리는 목적함수의 <code class="highlighter-rouge">gradient</code>를 구할 줄 알아야 한다.
-여기서 기본적으로 <code class="highlighter-rouge">chain rule</code> 을 알아야 하는데 간단하게 언급하면 <script type="math/tex">y=f(u)</script> 이고 <script type="math/tex">u=g(x)</script> 일때 즉, <script type="math/tex">y = f(g(x))</script> 일때,
-\[
-\frac{dy}{dx} = \frac{dy}{du} \frac{du}{dx}<br />
-\]
-로 나타 낼 수 있는것이다. 이는 고등학교때 합성함수의 미분을 배우면서 지나치며 배워온 지식이니 간단하다!
-자 이제 목적함수의 <code class="highlighter-rouge">gradient</code>를 구해보자. 위에서 정의한 (1) 식에서 <script type="math/tex">v_c</script>로 편미분을 한다. <script type="math/tex">v_c</script>로 편미분을 하는 것은 위에서 언급한 것과 같이 <script type="math/tex">v</script> 벡터가 우리가 예측하고자 하는 단어의 벡터를 나타내고 있으며 이것이 파라미터인 <script type="math/tex">\theta</script>에 depend한 변수이므로 이에 대한 <code class="highlighter-rouge">gradient</code>를 구하는 것이다.</p>
+여기서 기본적으로 <code class="highlighter-rouge">chain rule</code> 을 알아야 하는데 간단하게 언급하면 $y=f(u)$ 이고 $u=g(x)$ 일때 즉, $y = f(g(x))$ 일때,</p>
 
-<p>\[
-\frac{\partial}{\partial v_c}(\log exp(u_o^T v_c) - \log \sum_{w=1}^W exp(u_w^T v_c))
-\]</p>
+<script type="math/tex; mode=display">\frac{dy}{dx} = \frac{dy}{du} \frac{du}{dx}</script>
 
-<p>\[
-= \frac{\partial}{\partial v_c}(u_o^T v_c) - \frac{\partial}{\partial v_c}\color{red}{\log} \color{blue}{(\sum_{w=1}^W exp(u_w^T v_c)})
-\]</p>
+<p>로 나타 낼 수 있는것이다. 이는 고등학교때 합성함수의 미분을 배우면서 지나치며 배워온 지식이니 간단하다!
+자 이제 목적함수의 <code class="highlighter-rouge">gradient</code>를 구해보자. 위에서 정의한 (1) 식에서 $v_c$로 편미분을 한다. $v_c$로 편미분을 하는 것은 위에서 언급한 것과 같이 $v$ 벡터가 우리가 예측하고자 하는 단어의 벡터를 나타내고 있으며 이것이 파라미터인 $\theta$에 depend한 변수이므로 이에 대한 <code class="highlighter-rouge">gradient</code>를 구하는 것이다.</p>
 
-<p>\[
-= (u_o) - \frac{\partial}{\partial v_c}\color{red}{f}\color{blue}{(g(v_c))}
-\]</p>
+<script type="math/tex; mode=display">\frac{\partial}{\partial v_c}(\log exp(u_o^T v_c) - \log \sum_{w=1}^W exp(u_w^T v_c))</script>
 
-<p>여기서 <script type="math/tex">u_o</script> 를 제외한 오른쪽 부분을 따로 <code class="highlighter-rouge">chain rule</code>을 이용해서 다음과 같이 구할 수 있다.</p>
+<script type="math/tex; mode=display">= \frac{\partial}{\partial v_c}(u_o^T v_c) - \frac{\partial}{\partial v_c}\color{red}{\log} \color{blue}{(\sum_{w=1}^W exp(u_w^T v_c)})</script>
 
-<p>\[
-\frac{\partial}{\partial v_c}\color{red}{f}\color{blue}{(z)} =
+<script type="math/tex; mode=display">= (u_o) - \frac{\partial}{\partial v_c}\color{red}{f}\color{blue}{(g(v_c))}</script>
+
+<p>여기서 $u_o$ 를 제외한 오른쪽 부분을 따로 <code class="highlighter-rouge">chain rule</code>을 이용해서 다음과 같이 구할 수 있다.</p>
+
+<script type="math/tex; mode=display">\frac{\partial}{\partial v_c}\color{red}{f}\color{blue}{(z)} =
 \frac{\partial \color{red}{f}\color{blue}{(z)}}{\partial \color{blue}{z}}
 \frac{\partial \color{blue}{g(v_c)}}{\partial v_c} =
-\frac{1}{\sum_{w=1}^W exp(u_w^T v_c)}* \frac{\partial}{\partial v_c}{(\sum_{x=1}^W exp(u_x^T v_c)})
-\]</p>
+\frac{1}{\sum_{w=1}^W exp(u_w^T v_c)}* \frac{\partial}{\partial v_c}{(\sum_{x=1}^W exp(u_x^T v_c)})</script>
 
-<p>\[
-= \frac{1}{\sum_{w=1}^W exp(u_w^T v_c)}* {\sum_{x=1}^W exp(u_x^T v_c)}* \frac{\partial}{\partial v_c}(u_x^T v_c)
-= \frac{\sum_{x=1}^W exp(u_x^T v_c)}{\sum_{w=1}^W exp(u_w^T v_c)}* (u_x)
-\]</p>
+<script type="math/tex; mode=display">= \frac{1}{\sum_{w=1}^W exp(u_w^T v_c)}* {\sum_{x=1}^W exp(u_x^T v_c)}* \frac{\partial}{\partial v_c}(u_x^T v_c)
+= \frac{\sum_{x=1}^W exp(u_x^T v_c)}{\sum_{w=1}^W exp(u_w^T v_c)}* (u_x)</script>
 
 <p>위의 식을 최종적으로 정리하면 아래와 같이 간략하게 나타낼 수 있다.</p>
 
-<p>\[
-u_o - \sum_{x=1}^W \frac{exp(u_x^T v_c)}{\sum_{w=1}^W exp(u_w^T v_c)} * u_x = u_o - \sum_{x=1}^W p(x | c) u_x
-\]</p>
+<script type="math/tex; mode=display">u_o - \sum_{x=1}^W \frac{exp(u_x^T v_c)}{\sum_{w=1}^W exp(u_w^T v_c)} * u_x = u_o - \sum_{x=1}^W p(x | c) u_x</script>
 
-<p>최종적으로 목적함수가 위와 같이 <code class="highlighter-rouge">gradient function</code> 으로 나타났다. 여기서 <script type="math/tex">W</script> 는 전체 단어의 수로 수백만개까지 갈 수 있어서 강의에서는 <code class="highlighter-rouge">very expensive function to compute</code> 이라 얘기한다. 그래서 이는 approximation 과 normalization 이 필요하다. (<em>이는 과제에서 다뤄질것으로 보인다..</em>)</p>
+<p>최종적으로 목적함수가 위와 같이 <code class="highlighter-rouge">gradient function</code> 으로 나타났다. 여기서 $W$ 는 전체 단어의 수로 수백만개까지 갈 수 있어서 강의에서는 <code class="highlighter-rouge">very expensive function to compute</code> 이라 얘기한다. 그래서 이는 approximation 과 normalization 이 필요하다. (<em>이는 과제에서 다뤄질것으로 보인다..</em>)</p>
 
 <h6 id="summary">Summary</h6>
 <p>2강에서는 단어를 어떻게 벡터의 형태로 나타낼 수 있는지에 대해서 간략하게 알아봤다. 벡터로 나타내는 방식에는 <code class="highlighter-rouge">window based cooccurence matrix</code> 가 있으며, 이 매트릭스를 이용해 SVD를 진행하여 기하학적 의미도 살펴봤다. 그리고 <code class="highlighter-rouge">word2vec</code> 알고리즘을 진행하기 위해 목적함수와 확률식, 최적화를 위한 <code class="highlighter-rouge">gradient</code> 도출까지 진행해보았다. 이러한 기초 지식을 가지고 다음강에서부터는 word2vec를 통해 나타난 결과의 의미와, <code class="highlighter-rouge">GloVe</code> 와 같은 다른 형태의 word vector 표현 방식을 알아보도록 하겠다. 끝~</p>
