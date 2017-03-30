@@ -123,7 +123,9 @@ $p(w_{t+j} | w_t)$
 <p>지금까지 목적함수와 목적함수에 들어가있는 로그 확률의 식을 알아봤다. 이제 우리는 목적함수의 최적화 문제를 풀어야한다. 해당 목적함수는 로그 확률의 최대값을 구하는 것이며, 여기에서 우리는 <code class="highlighter-rouge">gradient</code> 방식을 사용할 것이다. <code class="highlighter-rouge">gradient</code> 방식은 대게 목적함수를 최소화(minimize) 할때 <code class="highlighter-rouge">gradient descent</code> 방식을 많이 사용한다. 수식을 사용하지 않고 직관적으로 설명을 하면, 특정 목적함수의 <code class="highlighter-rouge">gradient</code>(쉽게 기울기) 를 이용해서 이 기울기의 반대방향으로 계속해서 이동하다보면 극소(이는 local minimum일 수도, global minimum일 수도)가 되는 곳에 도달한다는 알고리즘이다(<em>gradient descent 방법에 대해 자세히 알고 싶다면 <a href="http://darkpgmr.tistory.com/133">Gradient Descent  탐색 방법</a>을 참고하기 바란다</em>). <code class="highlighter-rouge">Gradient</code> 최적화 방법을 사용하기 위해 우리는 목적함수의 <code class="highlighter-rouge">gradient</code>를 구할 줄 알아야 한다.
 여기서 기본적으로 <code class="highlighter-rouge">chain rule</code> 을 알아야 하는데 간단하게 언급하면 $y=f(u)$ 이고 $u=g(x)$ 일때 즉, $y = f(g(x))$ 일때,</p>
 
-<script type="math/tex; mode=display">\frac{dy}{dx} = \frac{dy}{du} \frac{du}{dx}</script>
+<script type="math/tex; mode=display">\begin{equation}
+\frac{dy}{dx} = \frac{dy}{du} \frac{du}{dx}  
+\end{equation}</script>
 
 <p>로 나타 낼 수 있는것이다. 이는 고등학교때 합성함수의 미분을 배우면서 지나치며 배워온 지식이니 간단하다!
 자 이제 목적함수의 <code class="highlighter-rouge">gradient</code>를 구해보자. 위에서 정의한 (1) 식에서 $v_c$로 편미분을 한다. $v_c$로 편미분을 하는 것은 위에서 언급한 것과 같이 $v$ 벡터가 우리가 예측하고자 하는 단어의 벡터를 나타내고 있으며 이것이 파라미터인 $\theta$에 depend한 변수이므로 이에 대한 <code class="highlighter-rouge">gradient</code>를 구하는 것이다.</p>
@@ -139,19 +141,24 @@ $p(w_{t+j} | w_t)$
 <script type="math/tex; mode=display">\frac{\partial}{\partial v_c}\color{red}{f}\color{blue}{(z)} =
 \frac{\partial \color{red}{f}\color{blue}{(z)}}{\partial \color{blue}{z}}
 \frac{\partial \color{blue}{g(v_c)}}{\partial v_c} =
-\frac{1}{\sum_{w=1}^W exp(u_w^T v_c)}* \frac{\partial}{\partial v_c}{(\sum_{x=1}^W exp(u_x^T v_c)})</script>
+\frac{1}{\sum_{w=1}^W exp(u_w^T v_c)} \frac{\partial}{\partial v_c}{(\sum_{x=1}^W exp(u_x^T v_c)})</script>
 
-<script type="math/tex; mode=display">= \frac{1}{\sum_{w=1}^W exp(u_w^T v_c)}* {\sum_{x=1}^W exp(u_x^T v_c)}* \frac{\partial}{\partial v_c}(u_x^T v_c)
-= \frac{\sum_{x=1}^W exp(u_x^T v_c)}{\sum_{w=1}^W exp(u_w^T v_c)}* (u_x)</script>
+<script type="math/tex; mode=display">= \frac{1}{\sum_{w=1}^W exp(u_w^T v_c)} {\sum_{x=1}^W exp(u_x^T v_c)} \frac{\partial}{\partial v_c}(u_x^T v_c)
+= \frac{\sum_{x=1}^W exp(u_x^T v_c)}{\sum_{w=1}^W exp(u_w^T v_c)} (u_x)</script>
 
 <p>위의 식을 최종적으로 정리하면 아래와 같이 간략하게 나타낼 수 있다.</p>
 
-<script type="math/tex; mode=display">u_o - \sum_{x=1}^W \frac{exp(u_x^T v_c)}{\sum_{w=1}^W exp(u_w^T v_c)} * u_x = u_o - \sum_{x=1}^W p(x | c) u_x</script>
+<script type="math/tex; mode=display">u_o - \sum_{x=1}^W \frac{exp(u_x^T v_c)}{\sum_{w=1}^W exp(u_w^T v_c)}  u_x = u_o - \sum_{x=1}^W p(x | c) u_x</script>
 
 <p>최종적으로 목적함수가 위와 같이 <code class="highlighter-rouge">gradient function</code> 으로 나타났다. 여기서 $W$ 는 전체 단어의 수로 수백만개까지 갈 수 있어서 강의에서는 <code class="highlighter-rouge">very expensive function to compute</code> 이라 얘기한다. 그래서 이는 approximation 과 normalization 이 필요하다. (<em>이는 과제에서 다뤄질것으로 보인다..</em>)</p>
 
 <h6 id="summary">Summary</h6>
 <p>2강에서는 단어를 어떻게 벡터의 형태로 나타낼 수 있는지에 대해서 간략하게 알아봤다. 벡터로 나타내는 방식에는 <code class="highlighter-rouge">window based cooccurence matrix</code> 가 있으며, 이 매트릭스를 이용해 SVD를 진행하여 기하학적 의미도 살펴봤다. 그리고 <code class="highlighter-rouge">word2vec</code> 알고리즘을 진행하기 위해 목적함수와 확률식, 최적화를 위한 <code class="highlighter-rouge">gradient</code> 도출까지 진행해보았다. 이러한 기초 지식을 가지고 다음강에서부터는 word2vec를 통해 나타난 결과의 의미와, <code class="highlighter-rouge">GloVe</code> 와 같은 다른 형태의 word vector 표현 방식을 알아보도록 하겠다. 끝~</p>
+
+<p>$x$에 대한 이차 방정식 $ax^2 + bx + c = 0$의 해는 다음과 같다.
+ \[
+ x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}
+ \]</p>
 
 
 	  ]]></description>

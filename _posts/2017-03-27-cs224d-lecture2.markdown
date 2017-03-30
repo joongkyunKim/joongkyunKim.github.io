@@ -114,7 +114,9 @@ $$
 여기서 기본적으로 `chain rule` 을 알아야 하는데 간단하게 언급하면 $y=f(u)$ 이고 $u=g(x)$ 일때 즉, $y = f(g(x))$ 일때,
 
 $$
+\begin{equation}
 \frac{dy}{dx} = \frac{dy}{du} \frac{du}{dx}  
+\end{equation}
 $$
 
 로 나타 낼 수 있는것이다. 이는 고등학교때 합성함수의 미분을 배우면서 지나치며 배워온 지식이니 간단하다!
@@ -138,19 +140,19 @@ $$
 \frac{\partial}{\partial v_c}\color{red}{f}\color{blue}{(z)} =
 \frac{\partial \color{red}{f}\color{blue}{(z)}}{\partial \color{blue}{z}}
 \frac{\partial \color{blue}{g(v_c)}}{\partial v_c} =
-\frac{1}{\sum_{w=1}^W exp(u_w^T v_c)}* \frac{\partial}{\partial v_c}{(\sum_{x=1}^W exp(u_x^T v_c)})
+\frac{1}{\sum_{w=1}^W exp(u_w^T v_c)} \frac{\partial}{\partial v_c}{(\sum_{x=1}^W exp(u_x^T v_c)})
 $$
 
 
 $$
-= \frac{1}{\sum_{w=1}^W exp(u_w^T v_c)}* {\sum_{x=1}^W exp(u_x^T v_c)}* \frac{\partial}{\partial v_c}(u_x^T v_c)
-= \frac{\sum_{x=1}^W exp(u_x^T v_c)}{\sum_{w=1}^W exp(u_w^T v_c)}* (u_x)
+= \frac{1}{\sum_{w=1}^W exp(u_w^T v_c)} {\sum_{x=1}^W exp(u_x^T v_c)} \frac{\partial}{\partial v_c}(u_x^T v_c)
+= \frac{\sum_{x=1}^W exp(u_x^T v_c)}{\sum_{w=1}^W exp(u_w^T v_c)} (u_x)
 $$
 
 위의 식을 최종적으로 정리하면 아래와 같이 간략하게 나타낼 수 있다.
 
 $$
-u_o - \sum_{x=1}^W \frac{exp(u_x^T v_c)}{\sum_{w=1}^W exp(u_w^T v_c)} * u_x = u_o - \sum_{x=1}^W p(x | c) u_x
+u_o - \sum_{x=1}^W \frac{exp(u_x^T v_c)}{\sum_{w=1}^W exp(u_w^T v_c)}  u_x = u_o - \sum_{x=1}^W p(x | c) u_x
 $$
 
 최종적으로 목적함수가 위와 같이 `gradient function` 으로 나타났다. 여기서 $W$ 는 전체 단어의 수로 수백만개까지 갈 수 있어서 강의에서는 `very expensive function to compute` 이라 얘기한다. 그래서 이는 approximation 과 normalization 이 필요하다. (*이는 과제에서 다뤄질것으로 보인다..*)
@@ -158,5 +160,12 @@ $$
 
 ###### Summary
  2강에서는 단어를 어떻게 벡터의 형태로 나타낼 수 있는지에 대해서 간략하게 알아봤다. 벡터로 나타내는 방식에는 `window based cooccurence matrix` 가 있으며, 이 매트릭스를 이용해 SVD를 진행하여 기하학적 의미도 살펴봤다. 그리고 `word2vec` 알고리즘을 진행하기 위해 목적함수와 확률식, 최적화를 위한 `gradient` 도출까지 진행해보았다. 이러한 기초 지식을 가지고 다음강에서부터는 word2vec를 통해 나타난 결과의 의미와, `GloVe` 와 같은 다른 형태의 word vector 표현 방식을 알아보도록 하겠다. 끝~
+
+
+ $x$에 대한 이차 방정식 $ax^2 + bx + c = 0$의 해는 다음과 같다.
+ \\[
+ x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}
+ \\]
+
 
 [lec-2]: https://www.youtube.com/watch?v=aRqn8t1hLxs&index=2&list=PLlJy-eBtNFt4CSVWYqscHDdP58M3zFHIG&t=3327s
