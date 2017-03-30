@@ -12,6 +12,67 @@
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
+	  <title>test</title>
+	  <link>//test</link>
+	  <author>joongkyunKim</author>
+	  <pubDate>2017-03-30T00:00:00+09:00</pubDate>
+	  <guid>//test</guid>
+	  <description><![CDATA[
+	     <p>Let’s test some inline math $x$, $y$, $x_1$, $y_1$.</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>Now a inline math with special character: $</td>
+      <td>\psi\rangle$, $x’$, $x^*$.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Test a display math:
+<script type="math/tex">|\psi_1\rangle = a|0\rangle + b|1\rangle</script>
+Is it O.K.?</p>
+
+<p>Test a display math with equation number:
+\begin{equation}
+   |\psi_1\rangle = a|0\rangle + b|1\rangle
+\end{equation}
+Is it O.K.?</p>
+
+<p>Test a display math with equation number:
+<script type="math/tex">% <![CDATA[
+\begin{align}
+    |\psi_1\rangle &= a|0\rangle + b|1\rangle \\\\
+    |\psi_2\rangle &= c|0\rangle + d|1\rangle
+  \end{align} %]]></script>
+Is it O.K.?</p>
+
+<p>And test a display math without equaltion number:
+<script type="math/tex">% <![CDATA[
+\begin{align\*}
+    |\psi_1\rangle &= a|0\rangle + b|1\rangle \\\\
+    |\psi_2\rangle &= c|0\rangle + d|1\rangle
+  \end{align\*} %]]></script>
+Is it O.K.?</p>
+
+<p>Test a display math with equation number:
+\begin{align}
+    |\psi_1\rangle &amp;= a|0\rangle + b|1\rangle \<br />
+    |\psi_2\rangle &amp;= c|0\rangle + d|1\rangle
+\end{align}
+Is it O.K.?</p>
+
+<p>And test a display math without equaltion number:
+\begin{align*}
+    |\psi_1\rangle &amp;= a|0\rangle + b|1\rangle \<br />
+    |\psi_2\rangle &amp;= c|0\rangle + d|1\rangle
+\end{align*}
+Is it O.K.?</p>
+
+	  ]]></description>
+	</item>
+
+	<item>
 	  <title>[CS224d] Lecture2 : Word2vec</title>
 	  <link>//cs224d-lecture2</link>
 	  <author>joongkyunKim</author>
@@ -154,11 +215,6 @@ $p(w_{t+j} | w_t)$
 
 <h6 id="summary">Summary</h6>
 <p>2강에서는 단어를 어떻게 벡터의 형태로 나타낼 수 있는지에 대해서 간략하게 알아봤다. 벡터로 나타내는 방식에는 <code class="highlighter-rouge">window based cooccurence matrix</code> 가 있으며, 이 매트릭스를 이용해 SVD를 진행하여 기하학적 의미도 살펴봤다. 그리고 <code class="highlighter-rouge">word2vec</code> 알고리즘을 진행하기 위해 목적함수와 확률식, 최적화를 위한 <code class="highlighter-rouge">gradient</code> 도출까지 진행해보았다. 이러한 기초 지식을 가지고 다음강에서부터는 word2vec를 통해 나타난 결과의 의미와, <code class="highlighter-rouge">GloVe</code> 와 같은 다른 형태의 word vector 표현 방식을 알아보도록 하겠다. 끝~</p>
-
-<p>$x$에 대한 이차 방정식 $ax^2 + bx + c = 0$의 해는 다음과 같다.
- \[
- x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}
- \]</p>
 
 
 	  ]]></description>
