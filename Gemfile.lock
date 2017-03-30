@@ -134,6 +134,7 @@ PLATFORMS
 DEPENDENCIES
   github-pages (~> 66)
   jekyll (~> 3.0.3)
+  kramdown (~> 1.8)
   rake (~> 10.1.1)
 
 BUNDLED WITH
