@@ -120,34 +120,6 @@
     
     <article class="post">
         <header class="post-header">
-            <h2 class="post-title"><a href="/test">test</a></h2>
-        </header>
-        <section class="post-excerpt">
-            <p>Let’s test some inline math $x$, $y$, $x_1$, $y_1$. Now a inline math with special character: $ \psi\rangle$, $x’$, $x^*$. Test a display math: Is it... <a class="read-more" href="/test">&raquo;</a></p>
-        </section>
-        <footer class="post-meta">
-            <img class="author-thumb" src="/assets/images/myphoto.png" alt="Author image" nopin="nopin" />
-            <!-- author -->
-            <a href='/author/joongkyunKim'>joongkyunKim</a>
-            <!-- [[tags prefix=" on "]] -->
-             
-                on 
-                
-                    
-                       <a href='/tag/NLP'>Nlp</a>,
-                       
-                
-                    
-                       <a href='/tag/cs224d'>Cs224d</a>
-                       
-                
-            
-            <time class="post-date" datetime="2017-03-30">30 Mar 2017</time>
-        </footer>
-    </article>
-    
-    <article class="post">
-        <header class="post-header">
             <h2 class="post-title"><a href="/cs224d-lecture2">[CS224d] Lecture2 : Word2vec</a></h2>
         </header>
         <section class="post-excerpt">
@@ -228,10 +200,11 @@
     <script type="text/javascript" src="/assets/js/index.js"></script>
 
     <!-- mathjax config similar to math.stackexchange -->
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
     <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
       jax: ["input/TeX", "output/HTML-CSS"],
+      TeX: { equationNumbers: { autoNumber: "AMS" } },
       tex2jax: {
         inlineMath: [ ['$', '$'] ],
         displayMath: [ ['$$', '$$']],

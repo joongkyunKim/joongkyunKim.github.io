@@ -8,21 +8,6 @@
     
       
       <item>
-        <title>test</title>
-        
-          <description>&lt;p&gt;Let’s test some inline math $x$, $y$, $x_1$, $y_1$.&lt;/p&gt;
-
-</description>
-        
-        <pubDate>Thu, 30 Mar 2017 00:00:00 +0900</pubDate>
-        <link>
-        http://joongkyunKim.github.io/test</link>
-        <guid isPermaLink="true">http://joongkyunKim.github.io/test</guid>
-      </item>
-      
-    
-      
-      <item>
         <title>[CS224d] Lecture2 : Word2vec</title>
         
           <description>&lt;p&gt;이번 포스팅에서는 lecture1:introduction 에 이어서 lecture2: Word vectors에 관해서 내용을 정리해보도록 한다. 우선 지난 시간에 했던 내용을 잠시 상기시켜보면, Natural Language Processing(이하 NLP)와 Deep Learning에 대해서 개략적인 내용을 살펴봤으며, 딥러닝을 NLP에 적용했을 때 기존의 해결 방식과 차이점을 비교해 보았다. 여기서 결정적으로 중요했던 부분은 딥러닝에 NLP를 적용하기 위해서는 글자 하나하나를 벡터의 형태로 나타내야 한다는 공통점을 보였다. 이번 강의에서는 어떻게 글자를 벡터로 나타내는지에 대한 내용이다.&lt;/p&gt;
