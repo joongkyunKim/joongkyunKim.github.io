@@ -1,7 +1,7 @@
 ---
 layout: post
 cover: 'assets/images/cover1.jpg'
-title:  "[CS224d] Lecture1 Review"
+title:  "[CS224d] Lecture1 : Intro to NLP&Deep Learning"
 date:   2017-03-22 12:30:00
 tags: NLP cs224d
 subclass: 'post tag-NLP tag-cs224'
@@ -60,7 +60,7 @@ representation learning 과 deep learning 방법을 이용해서 NLP 문제들�
 
 
  4. **Sentiment Analysis(감정분석)**
- 
+
  > *This movie doesn't care about cleverness, wit or any other kind of intelligent humor.*
 
 ![sentiment](downloads/lec1/sentiment.png)
