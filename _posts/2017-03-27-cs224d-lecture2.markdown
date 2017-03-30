@@ -114,9 +114,7 @@ $$
 여기서 기본적으로 `chain rule` 을 알아야 하는데 간단하게 언급하면 $y=f(u)$ 이고 $u=g(x)$ 일때 즉, $y = f(g(x))$ 일때,
 
 $$
-\begin{equation}
 \frac{dy}{dx} = \frac{dy}{du} \frac{du}{dx}  
-\end{equation}
 $$
 
 로 나타 낼 수 있는것이다. 이는 고등학교때 합성함수의 미분을 배우면서 지나치며 배워온 지식이니 간단하다!
@@ -145,8 +143,10 @@ $$
 
 
 $$
+\begin{equation}
 = \frac{1}{\sum_{w=1}^W exp(u_w^T v_c)} {\sum_{x=1}^W exp(u_x^T v_c)} \frac{\partial}{\partial v_c}(u_x^T v_c)
 = \frac{\sum_{x=1}^W exp(u_x^T v_c)}{\sum_{w=1}^W exp(u_w^T v_c)} (u_x)
+\end{equation}
 $$
 
 위의 식을 최종적으로 정리하면 아래와 같이 간략하게 나타낼 수 있다.
