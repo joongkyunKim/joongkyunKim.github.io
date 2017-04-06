@@ -3,8 +3,8 @@ layout: post
 cover: 'assets/images/cover1.jpg'
 title:  "[CS224d] Lecture1 : Intro to NLP&Deep Learning"
 date:   2017-03-22 12:30:00
-tags: NLP cs224d
-subclass: 'post tag-NLP tag-cs224'
+tags: NLP CS224n
+subclass: 'post tag-NLP tag-CS224n'
 categories: 'joongkyunKim'
 navigation: True
 ---
