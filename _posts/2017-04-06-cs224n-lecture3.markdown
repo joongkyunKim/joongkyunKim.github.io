@@ -1,0 +1,47 @@
+---
+layout: post
+cover: 'assets/images/cover1.jpg'
+title:  "[CS224n] Lecture3 : GloVe: Global Vectors for Word Representation"
+date:   2017-04-06
+tags: NLP CS224n
+subclass: 'post tag-NLP tag-CS224n'
+categories: 'joongkyunKim'
+navigation: True
+---
+
+*이번 강의부터는 최근 2017년 CS224d(2016)와 동일한 강좌인 CS224n 강의 비디오가 youtube에 공개되면서 좀 더 따끈따끈한 최신 내용을 반영하고자 CS224n 강의를 정리하도록 하겠다. 앞서 진행된 두 강좌에 대해서는 내용이 거의 비슷하고 순서정도만 변경되어있기 때문에 이어서 진행해도 큰 어려움이 없을것으로 본다*
+
+이번 3강에서는 앞에서 배운 Word2vec과 이어서 GloVe란 알고리즘에 대해 알아보며, evaluation에 대해서 알아보도록 한다.
+새롭게 CS224n 강의에 대해서 진행하기 때문에 기존의 CS224d 강의 youtube 링크와 다르다는 것을 주의하기 바란다!
+
+* Lecture slide : [LectureSlide3]({{ site.url }}/downloads/lec3/LectureSlide3.pdf)
+* Lecture note  : [Lecturenote2]({{ site.url }}/downloads/lec3/LectureNote2.pdf)
+* Video Clip    : [3강][lec-3]
+
+###### Lecture 2 Review
+3강에 대한 내용을 언급하기 이전에 2강에서 진행된 Word2vec 내용과 Gradient 에 대해서 다시한번 상기시키도록 하겠다. (*2강은 cs224d 강의내용이었기 때문에 cs224n으로 바뀌면서 언급하지 못한 내용에 대해서도 간략하게 언급하도록 하겠다*)
+
+지난 강의에서 다뤘던 것중에 가장 중요한 내용은 Word2vec에서 어떻게 벡터를 이용해서 단어를 예측하는지, 확률의 정의는 어떻게 되는지, 그리고 목적함수가 어떠한 형태인지, 이를 최적화하기위해 gradient를 어떻게 구하는지에 대해서 쭉 배워보았다. ([지난 강의][Lecture2])
+지난 강의에서 중심단어를 놓고, 좌우 window 크기만큼 예측을 하고, 한칸씩 이동을하면서 전체 문서의 단어들을 예측하는 그림을 기억할 것이다. 이는 `Skip-grams` 이라는 알고리즘이다. 이는 `Skip-grams`는 다음과 같이 설명된다.
+> Predict context	words	given	target	(position	independent)
+
+그리고 각 단어를 예측할 확률과 최종 목적함수는 다음과 같다.
+
+\begin{equation}
+p(o | c) = \frac{exp(u_o^T v_c)}{\sum_{w=1}^W exp(u_w^T v_c)}
+\end{equation}
+
+\begin{equation}
+J(\theta) = \frac{1}{T} \sum_{t=1}^T\sum_{-m \le j \le m, j\neq 0} \log p(w_{t+j}|w_t)
+\end{equation}
+
+여기서 o는 outside(or output) 단어의 index(id) 이며, c는 중심단어의 index를 나타낸다. 또한 $u$와 $v$는 각각 outside 단어의 중심단어 벡터와 중심단어의 outside 벡터를 나타낸다. 즉, 각 단어는 두개의 벡터를 가지고 있음을 알 수 있다.
+
+위의 목적함수를 최적화 하는 과정에서 update를 하는데 `gradient descent` 방식을 쓴다고 언급했었다. 하지만 이 방식은 document 내의 모든 단어에 대해 위의 확률을 다 계산한 다음 update하는 방식을 취한다. 하지만 이 경우에는 단어의 수가 매우 많을 경우 아주 비효율적인 update방식이므로 이에 대한 대책으로 `stochastic gradient descent` 방법이다. 이는 파라미터인 $\theta$ 를 각각의 window 를 진행한다음 지속적으로 upgrade 하겠다는 방식이다.
+
+![stochasticgd](downloads/lec3/stochasticgd.png)
+
+
+
+[lec-3]: https://www.youtube.com/watch?v=ASn7ExxLZws&list=PL3FW7Lu3i5Jsnh1rnUwq_TcylNr7EkRe6&index=3&t=672s
+[Lecture2]: https://joongkyunkim.github.io/cs224d-lecture2
