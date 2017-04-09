@@ -42,6 +42,71 @@ J(\theta) = \frac{1}{T} \sum_{t=1}^T\sum_{-m \le j \le m, j\neq 0} \log p(w_{t+j
 ![stochasticgd](downloads/lec3/stochasticgd.png)
 
 
+###### Skip-gram model & negative sampling
+이제부터는 3강에서 추가된 내용에 대해 정리해볼 시간이다. (1)번 식에서 우리는 분모에 해당하는 부분을 계산하는데 상당히 많은 시간과 비용이 들것이라고 쉽게 예상할 수 있다.(*모든 단어에 대해서 두 벡터의 내적을 계산해야하므로*)
+그래서 이 강의에서는 `negative sampling` 이라는 방식을 추천한다. 여기서 `negative sampling` 이라는 방식은 실제 center word와 context word가 아닌 random word를 일부 선택하여 binary 로지스틱 모델링을 하는 방식이다. 아래의 새롭게 제시된 목적함수를 살펴보자
+
+(paper from "Distributed Representations of Words and Phrases and their Compositionality"(Mikolov et al.2013))
+
+\begin{equation}
+J_{t}(\theta) = \log \sigma(u_{o}^T v_{c}) + \sum_{i}^k E_{j \sim P(w)}[\log \sigma(-u_{o}^T v_{c})]
+\end{equation}
+
+\begin{equation}
+J(\theta) = \frac{1}{T}\sum_{t=1}^T J_{t}(\theta)
+\end{equation}
+
+여기서 $\sigma$ 는 일반적으로 우리가아는 시그모이드 함수를 나타낸다($ \sigma(x) = \frac{1}{1+e^{-x}}$)
+위의 식을 살펴보면 시그모이드 함수가 로지스틱 함수이므로 위와같이 로지스틱 모델링이란 말이 성립이된다. 또한 뒷부분은 $P(w)$ 의 확률분포를 따르는 j라는 샘플의 시그모이드 함수의 기대값을 나타낸다.
+위의 (3)번 식은 아래와 같이 좀 더 명확하게 나타낼 수 있다.
+
+\begin{equation}
+J_{t}(\theta) = \log \sigma(u_{o}^T v_{c}) + \sum_{j \sim P(w)}[\log \sigma(-u_{o}^T v_{c})]
+\end{equation}
+
+이며, $P(w) = U(w)^{3/4} / Z$ 로 random negative sampling 을 하는 확률분포는 Uniform 분포를 변형하여 만들어진 분포를 따른다.
+위의 식을 해석하면 실제 center word와 context word 가 나올 확률자체는 maximize 시키고, 뒤에 있는 random word 에 따른 확률은 minimize 할려는 목적함수를 의미한다. (*참고 : $\sigma(-x) = 1-\sigma(x)*)
+우리는 위의 과정을 통해서, 실제 (2)번 목적함수 계산을 위해 계산비용이 매우 높은 (1)식의 확률을 계산해야했지만, 아래와 같이 `negative sampling` 방식을 이용함으로써 일정 k개의 단어들에 대해서만 계산을 해주면된다. 일반적으로 k는 강의에서는 10개를 사용한다고 한다.
+
+추가로, 앞서 설명한 `Skip-gram` 모델 이외에 제시된 모델은 `Continuous bag of words(CBOW)` 라는 모델로, `Skip-gram` 은 center word로 부터 주변의 각각의 단어들을 예측하는 모델이라면, `CBOW` 모델은 주변 단어들의 vector를 이용하여 center word를 예측하는 모델이다.(*이에 대한 설명은 따로 진행되진 않고 Assignment 에서 다뤄지는것으로 보인다*)
+
+이렇게 `Skip-gram`을 이용하여 단어를 벡터로 나타내는 word2vec 방식은 단어들의 동시발생 그자체에 관심이 있는데, 동시발생 `빈도`에 관심을 가지는 방식이 앞서 2강에서 설명한 `window based co-occurence matrix` 를 이용하는 방식이다(*CS224n 에서는 이 뒤에 2강에서 언급한 window based Co-Occurrence matrix를 설명한다. 이는 2강에서 자세히 다뤘기때문에 생략하기로 한다*)
+
+###### GLoVe : Global Vectors for Word Representation
+이번에는 GLoVe 라는 알고리즘에 대해 알아보자. GLoVe는 앞서 2강에서 언급한 `window based co-occurence matrix` 를 이용한다. 아래 GLoVe의 목적함수 식을 보자.
+
+\begin{equation}
+J(\theta) = \frac{1}{2} \sum_{i,j=1}^W f(P_{ij})(u_i^Tv_j - \log P_{ij})
+\end{equation}
+
+$$
+f(X_{ij})=
+\begin{cases}
+(\frac{X_{ij}}{x_{max}})^{\alpha} & \text{if $X_{ij} \le x_{max}$} \\
+1 &\text{otherwise}
+\end{cases}
+$$
+
+여기에서 $P_{ij}$는 co-occurence matrix에서의 i,j번째 원소를 말하며, GLoVe 모형은 위의 목적함수를 최대화하는 u,v 벡터를 찾고자한다. 이 모형은 트레이닝이 빠르고, 작은 corpus에서도 좋은 성능을 나타내서 많이 이용하는 알고리즘 중 하나이다.
+이 GLoVe 모형은 `비유(Word Vector Analogy)` 에서 좋은 성능을 나타낸다. 예를 들어 man:woman :: king: ? 라고 되어있다면, 물음표자리에는 대부분의 사람들이 queen을 유추해낼 수 있을 것이다. 이러한 비유의 관계를 GLoVe 모형이 잘 나타낸다. 그리고 이러한 비유하는 것을 알아내는 식은 아래와 같이 코사인 유사도를 이용하여 제일 높은 유사도를 갖는 d를 찾는 것이다. (a:b :: c: ?)
+
+\begin{equation}
+d = arg \max_i \frac{(x_b-x_a+x_c)^T x_i}{ \Vert x_b-x_a+x_c \Vert}
+\end{equation}
+
+이와 같은 방식으로 아래와 같이 대응되는 단어의 쌍, Company-CEO, 원형-비교급-최상급과 같은 연결을 찾을 수 있다.(그림상에서 두 점(단어)를 잇는 점선의 방향들이 유사함을 알 수 있다). 또한 이러한 비유, 유추는 문법적인(syntactic) 관계와 의미적인(Semantic) 관계 유추에도 활용될 수 있다.
+
+![glovevis](downloads/lec3/glovevis.png)
+![gloveceo](downloads/lec3/gloveceo.png)
+![glovesuper](downloads/lec3/glovesuper.png)
+
+그리고 GLoVe 모델은 다른 여러 모델과 비교하여 정확도 측면에서도 좋은 성능을 보여준다. 아래에서 보듯이 training 데이터 사이즈가 커질수록 당연하게 정확도가 높아짐을 알 수 있고, 맨아래의 모형 파라미터에서는 GLoVe가 300차원의 42billion 단어수를 트레이닝했을때 정확도가 상당히 높음을 알 수 있다. 또한 이전에 배운 Skip-gram 모형보다도 트레이닝 속도가 더 빠른 결과를 보여준다.
+
+![gloveaccuracy](downloads/lec3/gloveaccuracy.png)
+![glovetrainingtime](downloads/lec3/glovetrainingtime.png)
+
+###### Summary
+새롭게 시작하는 CS224n 3강에서는 앞서 2강에서 배운 Word2vec Skip-gram 모형과 Count base 인 Window based co-occurence matrix를 이용한 GLoVe 모형에 대해서 알아봤다. Skip-gram 모형에서 계산 비용을 줄이기 위한 negative sampling도 언급이 되었고, GLoVe모형이 어떤 목적함수를 갖고, 이것이 실제로 어떠한 장점을 갖는 모형인지, 그리고 다른 모델과 비교하는 알고리즘의 장점에 대해서도 알아봤다. 다음 강의에서는 Word Classification과 Neural Network에 대해서 좀 더 알아보기로 하자. 끝~
 
 [lec-3]: https://www.youtube.com/watch?v=ASn7ExxLZws&list=PL3FW7Lu3i5Jsnh1rnUwq_TcylNr7EkRe6&index=3&t=672s
 [Lecture2]: https://joongkyunkim.github.io/cs224d-lecture2
