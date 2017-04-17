@@ -1,0 +1,179 @@
+---
+layout: post
+cover: 'assets/images/cover2.jpg'
+title:  "[CS224n] Lecture4 : Word Window Classification and Neural Network"
+date:   2017-04-17
+tags: NLP CS224n
+subclass: 'post tag-NLP tag-CS224n'
+categories: 'joongkyunKim'
+navigation: True
+---
+
+ 이번 포스팅에서는 분류문제란 어떤형태의 문제인지, 그리고 NLP에서의 분류 방법인 window Classification 문제와 Neural Network 에 대해서 간략하게 알아보도록 하자. 수식적인 부분이 많이 나오는 만큼 긴장하길 바란다..
+
+* Lecture slide : [LectureSlide4]({{ site.url }}/downloads/lec4/LectureSlide4.pdf)
+* Lecture note  : [Lecturenote2]({{ site.url }}/downloads/lec4/LectureNote3.pdf)
+* Video Clip    : [3강][lec-4]
+
+
+###### Classification background
+일반적으로 머신러닝에서 분류문제는 {x,y}로 데이터가 주어졌을때, $x$(input) 을 이용해서 $y$ 인 label을 예측하는 것을 의미한다. NLP에서는 $x$ 는 단어 벡터, context windows, 문장 등등이 될 수 있고, $y$는 named entities, 다른 단어, 문법적요소 등이 될 수 있다. 아래의 그림을 보자.
+
+![classification1](downloads/lec4/classification1.png)
+위의 문제에서는 2차원에서 녹색점과 빨간점을 구분하는 로지스틱 회귀식을 찾고 싶다. 보통의 머신러닝에서는 x가 고정되어 있다고 가정하고, 로지스틱 회귀분석의 가중치($W$)를 트레이닝한다.
+우리가 앞서 배운 내용에서는 위와 같이 적용하기 위해서는 우리는 아래의 식을 이용하여 마찬가지로 가중치 역할을 하는 $W$를 트레이닝을 해야한다.
+
+\begin{equation}
+p(y | x) = \frac{exp(W_y. x)}{\sum_{c=1}^C exp(W_c. x)}
+\end{equation}
+
+$$
+( W \in \mathbb R^{C * d} )
+$$
+
+위의 1번 식은 두 개의 식으로 쪼개서 아래와 같이 볼 수 있다. 분자 부분은 행렬 연산이며, 이를 표준화(normalize) 시키는 두개의 과정으로 볼 수 있다.
+
+$$
+W_y.x = \sum_{i=1}^d W_{yi}x_i = f_y
+$$
+
+$$
+p(y | x) = \frac{exp(f_y)}{\sum_{c=1}^C exp(f_c)} = softmax(f_y)
+$$
+
+그리고 위의 수식을 트레이닝 하는 과정은 정확히 분류하는 확률을 최대화 하는 방향으로 이뤄질 것이다. 이는 다시말하면 아래의 log 확률을 최소화 하는 과정과 동일하다.
+
+\begin{equation}
+-\log p(y | x) = -\log(\frac{exp(f_y)}{\sum_{c=1}^C exp(f_c)})
+\end{equation}
+
+위의 2번 수식을 잘 살펴보면, 이는 Cross-Entropy(이하 CE) 함수와 동일하다는 것을 알 수 있다. CE 함수는 아래 수식 3 과 같다. 여기에서 $q(c)$는 앞에서 구한 1번 수식과 동일하고, $p(c)$ 를 $p = [0,...0,1,0,...0]$ 의 형태로 정확한 분류가 이뤄진 곳에서 1, 아닌곳에서 0이란 값을 갖는 확률 분포라고 가정한다면 위의 2번 수식과 CE는 동일한 수식이라고 생각 할 수 있다.
+
+\begin{equation}
+H(p,q) = -\sum_{c=1}^C p(c)\log q(c)
+\end{equation}
+
+최종적으로 전체 데이터 셋에 대한 CE loss function은 다음과 같다.
+
+\begin{equation}
+J(\theta) =\frac{1}{N} \sum_{i=1}^N -\log(\frac{exp(f_{y_i})}{\sum_{c=1}^C exp(f_c)}) + \lambda \sum_k \theta_k^2
+\end{equation}
+
+뒤에 추가된 부분은 일반적으로 트레이닝을 할때 overfitting 을 막기위해 추가되는 regularization factor 이다. 일반적으로 딥러닝모델에서는 트레이닝 시간 또는 파라미터의 수가 많을 경우 시간에 따라 training error는 줄어들게 된다. 하지만 이것이 만약에 특정 트레이닝 데이터에 overfitting 되게 되면 test error는 다시 증가하게 된다. 이 점을 방지하기 위해 위와 같이 regularization factor를 추가하게 된다.
+그리고 이제부터는 수식을 행렬형태로 좀더 간편하게 나타내기 위해
+
+$$
+f = Wx
+$$
+
+로 표현하기로 하자.
+
+
+###### Window Classification
+단어를 분류할 때 어려운 점은 그 단어의 ambiguity 때문이다. 같은 단어라도 다른 의미를 지닐때가 있기 때문에 이러한 점을 극복하기 위해서는 그 단어 주위에 있는 context, 즉 문맥을 살펴봐야할 필요가 있다. 예를들어 아래와 같은 경우는 named entities가 불분명한 경우들 이다
+
+> Paris, France vs. Paris Hilton
+> Berkshire Hathaway vs. Anne Hathaway
+
+이러한 모호한 단어들을 제대로 구분하기 위해서 도입된 방법이 `window classification`  이다. 위에서 말한 context 를 이용하여 각 단어를 분류하고자 하는 아이디어에서 출발해서 그 범위를 특정 크기의 window에 한정해서 예측하겠다는 내용이다.
+예를 들어 이 방식을 이용해서 named entity를 구분할 수 있는데 `사람`, `장소`, `기관` 과 같이 분류할 수 있다.
+`Window classification` 의 목적은 최종적으로 `window` 내의 중심단어를 분류하고자 하는 것이며, 주변 단어를 이용하여 중심단어를 분류하는 softmax classifier를 만드는 것이다.
+아래의 예제를 살펴보자.
+
+![window](downloads/lec4/window.png)
+여기에서는 중심단어인 `paris`를 분류하고자 하는것인데 window 길이가 2이므로 좌우 2개 주변 단어를 이용하여 `paris` 를 분류한다. 이 모델의 input으로 들어가는 벡터인 $x_{window}$는 총 5개의 단어를 합친(concatenate) $\in \Bbb R^{5d}$ 에 속한다.
+우리는 이 $x_{window}$ 를 위의 (1)번식에 넣어서 확률값을 구할 수 있다. 여기서 나오는 확률은 각각 `사람`, `장소`, `기관` 일 확률이 될 것이다. 그리고 마찬가지로 (4)번식에도 대입하면 error도 구할 수 있다. 하지만 여기서 각 word vector는 어떻게 업데이트를 하는 것일까?
+
+우리는 앞에서 목적함수를 미분을 통해 gradient descent 방식을 진행하는 것을 배웠었다. 이를 이용하는것이다. 즉, 가지고 있는 loss function을 미분하여 업데이트를 진행 할 수 있다. 여기서 주요하게 적용되는 개념이 `chain rule` 이며 이는 2강에서 자세하게 다뤘다.
+
+자, 업데이트를 진행하기에 앞서 우선 필요한 notation부터 정의를 한다.
+
+ - $\hat y$ : softmax 확률의 output vector
+ - $t$ : 결과값(target) 확률 분포(실제 정답인 class 에서만 1이고, 나머지에선 0을 갖음)
+ - $f = f(x) = Wx \in \Bbb R^C$ and $f_c$ = f 벡터의 c 번째 원소
+
+우선 목적함수 부분에서 $\log softmax(f_y(x))$ 부분에 대해서만 $x$에 depend 하므로 이부분을 미분한다.
+
+$$
+\frac{\partial}{\partial x} -\log softmax(f_y(x)) = \sum_{c=1}^C - \frac{\partial \log softmax(f_y(x))}{\partial f_c} \frac{\partial f_c(x)}{\partial x}
+$$
+
+여기서 $f_c$가 $c=y$(올바른 class) 일때와 $c\neq y$ 일때를 나눠 생각해보면, 다음과 앞부분의 식을 바꿔서 생각할 수 있다.
+
+$$
+\frac{\partial}{\partial f} -\log softmax(f_y(x)) =  
+\begin{bmatrix}
+\hat y_1 \\
+... \\
+\hat y_y -1 \\
+... \\
+\hat y_C
+\end{bmatrix}
+$$
+
+여기서 c = y 인 부분만 -1 을 해준다. 이는 다음과 같이 쓸 수 있다.
+
+
+$$
+\frac{\partial}{\partial f} -\log softmax(f_y(x)) =  
+\begin{bmatrix}
+\hat y - t
+\end{bmatrix}
+ = \delta
+$$
+
+t 라는 것이 위에서 정의한대로 실제 클래스이면 1 아니면 0을 나타내는 확률 분포이므로, 위의 두 식은 동일하게 받아들일 수 있다.
+
+최종적으로 위의 업데이트 식은 아래와 같이 쓸 수 있다.
+
+$$
+\frac{\partial}{\partial x} -\log softmax(f_y(x)) = \sum_{c=1}^C - \frac{\partial \log softmax(f_y(x))}{\partial f_c} \frac{\partial f_c(x)}{\partial x} = \sum_{c=1}^C \delta_c W_{c.}^T
+$$
+
+이며 이는 앞에서 한것처럼 간단하게 행렬로 나타낼 수 있다. $W^T\delta$ 로..
+최종 업데이트 식은 아래와 같이 쓸 수 있다.
+
+$$
+\nabla_x J = W^T\delta \in \Bbb R^{5d}
+$$
+
+
+*위의 과정에서 행렬 연산이 많이 나오는데, 이중에서 $f=Wx$ 계산과 exponential 계산은 여기 표현을 빌리면 expensive 한 계산이다. 이를 코딩할 때의 팁은 모든 word vector를 다 합쳐서 하나의 매트릭스로 만들어서 곱 연산을 하는 것 보다 word vector를 리스트로 만들어서 for loop를 이용해서 반복계산하는것이 시간적으로 효율적이다.*
+
+###### Neural Network
+지금까지 softmax(=logistic regression) 을 이용한 모델 트레이닝을 진행하였다. 하지만 softmax의 경우, 단지 linear decision boundary를 제시할 뿐이다. 이는 분류 문제에서 상당한 제한으로 적용되며, non-linear 한 boundary 를 위해 neural network 가 제안되었다.
+
+Neural Network 는 많은 사람들이 요즘 핫한 딥러닝의 주요 알고리즘이므로 많이 들어보고 알고 있을것이라 생각되지만, 아주 간략하게 강의 슬라이드 그림으로 설명하고 넘어가겠다.
+
+![neuron](downloads/lec4/neuron.png)
+![neuralnetwork](downloads/lec4/neuralnetwork.png)
+
+위의 사진을 보면, 기본적인 구조가 나타난다. 동그란부분을 뉴런이라고 하며, 왼쪽에서 들어오는 위의 3개의 화살표가 input(x) 이며, 맨 아래 화살표가 bias라는 것을 나타낸다. 이들이 들어오면 선형결합을 통해서 $w^Tx+b$ 가 되며, $f$라는 함수(sigmoid, 지난 3강에서 살펴보았다.) 를 거쳐 output이 나오는 형태이다.
+이를 좀 더 복잡한 형태로 해놓은 것이 아래의 그림이며, 우리가 이제부터 직접적으로 사용할 수식은 중간에 존재하는 matrix notation 부분이다!
+
+다시한번 위에서 언급한 $X_{window}$ 를 떠올려보자. 그리고 이 문제를 아까는 softmax에 적용했지만 이번엔 neural network 에 적용해보자. 여기서 우리가 분류하고싶은 문제는 중심 단어가 위치이냐 아니냐에 대한 분류문제이다.
+아주 간단히 아래와 같이 3-layer neural network를 생각해보자.
+
+![score](downloads/lec4/score.png)
+여기서 $U$라는 것은 중간에 두번째 layer에서 나온 output을 어떠한 score로 변환해주는 가중치라고 생각하면 될것 같다. 우리가 여기서 구하고자 하는 최종 s = score(museums in Paris are amazing) 이며, 이 score는 중심단어인 `paris`가 위치인지 아닌지에 대한 score 값이다.
+
+자, 이제 업데이트를 하기 위해서는 목적함수가 있어야한다. 여기에서는 새로운 형태의 목적함수를 제시하는데 `Max-margin loss function` 이다. 그 수식은 아래와 같다
+
+\begin{equation}
+J = \max (0, 1-s+s_c)
+\end{equation}
+
+여기서 $s$ = score(museums in Paris are amazing), $s_c$ = score(Not all museums in Paris) 이며, 위의 수식이 의미하는 바는 진짜 window의 score는 크게, 진짜가 아닌(corrupted) window 의 score는 낮게 하는 것이 목적이다. 그리고 이 목적함수는 continuous한 함수이므로 Stochastic Gradient Descent(SGD) 방식을 이용해 최적화를 진행 할 수 있다.
+좀 더 직관적으로 왜 이런 목적함수를 사용했는지 알아보자. 아래의 그림을 살펴보자
+![margin](downloads/lec4/margin.png)
+기존의 softmax의 경우 검은 트레이닝 데이터가 존재할때 이를 양분하는 boundary는 빨간 선과 같이 생길수 있다. 이럴 경우 유사한 위치의 빨간 테스트 데이터가 들어왔을 때 분류 정확도가 현저하게 낮아진다. 하지만 오른쪽과 같이 max-margin을 사용하게 되면 boundary가 파란선과 같이 생기며, 비슷한 위치의 빨간 테스트 데이터에 대해서도 높은 성능을 보일 수 있다. 일반적으로 max-margin이 softmax에 비해 more robust 하다고 한다.
+
+위의 목적함수를 전체 데이터에 대해서 진행하는 방식은 앞의 강의에서 언급한 skip-gram에서의 negative sampling 과 유사하다. 즉, true 한 window에 대해서 여러개의 corrupt window를 샘플링해서 위의 목적함수를 구하고, 이를 모든 트레이닝 window에 대해 더하는 형태로 구하게 된다. (*이러한 negative sampling을 진행하는 이유는 전체에 대해서 하게 되면 너무 계산의 cost가 크기 때문이다.*)
+
+이제 SGD 방식을 적용하기위해 목적함수를 각각 변수인 $U$,$W$,$b$,$x$에 대해 미분한 식을 찾아야한다. 이 과정이 상당히 길기 때문에 포스팅에 직접 싣지는 않겠다. 이 내용은 강의 slide 50쪽부터 58쪽까지 `Training with Backpropagation` 파트에 자세하게 설명이 되어있으며, 위에서 우리가 진행한것처럼 `chain rule`을 활용하면 충분히 이해할 수 있는 과정이다. 꼭 다음 강의를 위해서 눈으로 따라가며 이해해보기 바란다.
+
+###### Summary
+이번 4강에서는 일반적인 분류문제와 softmax, Cross-Entropy loss function에 대해서 알아봤다. 또한 특정 단어 분류를 위해 주변 문맥을 이용하는 개념인 window classification 모델과 이를 어떻게 앞에서 배운 softmax에 적용해서 최적화를 진행하는지, 그 미분과정을 자세히 들여다봤다. 그리고 softmax의 linear decision boundary 성질의 한계를 극복하기 위해 non-linear한 Neural Network 에 대해서 간략하게 알아봤으며, 새로운 loss function인 Max-margin loss function 의 쓰임새도 알아보았다. 비록 neural network 에서 SGD를 위한 미분을 다 살펴보진 않았지만 앞서 진행된 방식대로 슬라이드를 보고 따라간다면 충분히 해낼 수 있을 것이다.
+다음 강의에서는 Neural network 의 파라미터 업데이트 방식인 backpropagation 방식을 알아보고 좀 더 복잡한 모델을 살펴볼 예정이다. 끝~
+
+[lec-4]: https://www.youtube.com/watch?v=uc2_iwVqrRI&list=PL3FW7Lu3i5Jsnh1rnUwq_TcylNr7EkRe6&index=4

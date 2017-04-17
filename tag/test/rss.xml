@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+   
+      <title>joongkyunKim.github.io</title>
+   
+   <link>http://joongkyunKim.github.io</link>
+   <description>Postings about what i learned and what i have to learn, especially about Deep Learning</description>
+   <language>en-uk</language>
+   <managingEditor> joongkyunKim</managingEditor>
+   <atom:link href="rss" rel="self" type="application/rss+xml" />
+   
+	<item>
+	  <title>[CS224d] Lecture2 Review</title>
+	  <link>//cs224d-lecture2</link>
+	  <author>joongkyunKim</author>
+	  <pubDate>2017-03-23T00:00:00+09:00</pubDate>
+	  <guid>//cs224d-lecture2</guid>
+	  <description><![CDATA[
+	     
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">show</span>
+  <span class="vi">@widget</span> <span class="o">=</span> <span class="no">Widget</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="ss">:id</span><span class="p">])</span>
+  <span class="n">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
+    <span class="nb">format</span><span class="p">.</span><span class="nf">html</span> <span class="c1"># show.html.erb</span>
+    <span class="nb">format</span><span class="p">.</span><span class="nf">json</span> <span class="p">{</span> <span class="n">render</span> <span class="ss">json: </span><span class="vi">@widget</span> <span class="p">}</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></figure>
+
+
+	  ]]></description>
+	</item>
+
+
+</channel>
+</rss>

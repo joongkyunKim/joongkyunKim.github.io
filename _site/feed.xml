@@ -8,6 +8,21 @@
     
       
       <item>
+        <title>[CS224n] Lecture4 : Word Window Classification and Neural Network</title>
+        
+          <description>&lt;p&gt;이번 포스팅에서는 분류문제란 어떤형태의 문제인지, 그리고 NLP에서의 분류 방법인 window Classification 문제와 Neural Network 에 대해서 간략하게 알아보도록 하자. 수식적인 부분이 많이 나오는 만큼 긴장하길 바란다..&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Mon, 17 Apr 2017 00:00:00 +0900</pubDate>
+        <link>
+        http://joongkyunKim.github.io/cs224n-lecture4</link>
+        <guid isPermaLink="true">http://joongkyunKim.github.io/cs224n-lecture4</guid>
+      </item>
+      
+    
+      
+      <item>
         <title>[CS224n] Lecture3 : GloVe: Global Vectors for Word Representation</title>
         
           <description>&lt;p&gt;&lt;em&gt;이번 강의부터는 최근 2017년 CS224d(2016)와 동일한 강좌인 CS224n 강의 비디오가 youtube에 공개되면서 좀 더 따끈따끈한 최신 내용을 반영하고자 CS224n 강의를 정리하도록 하겠다. 앞서 진행된 두 강좌에 대해서는 내용이 거의 비슷하고 순서정도만 변경되어있기 때문에 이어서 진행해도 큰 어려움이 없을것으로 본다&lt;/em&gt;&lt;/p&gt;
