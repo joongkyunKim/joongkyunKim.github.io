@@ -12,7 +12,7 @@ navigation: True
  이번 포스팅에서는 분류문제란 어떤형태의 문제인지, 그리고 NLP에서의 분류 방법인 window Classification 문제와 Neural Network 에 대해서 간략하게 알아보도록 하자. 수식적인 부분이 많이 나오는 만큼 긴장하길 바란다..
 
 * Lecture slide : [LectureSlide4]({{ site.url }}/downloads/lec4/LectureSlide4.pdf)
-* Lecture note  : [Lecturenote2]({{ site.url }}/downloads/lec4/LectureNote3.pdf)
+* Lecture note  : [Lecturenote3]({{ site.url }}/downloads/lec4/LectureNote3.pdf)
 * Video Clip    : [3강][lec-4]
 
 
