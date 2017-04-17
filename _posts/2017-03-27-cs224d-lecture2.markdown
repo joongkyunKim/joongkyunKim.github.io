@@ -4,7 +4,7 @@ cover: 'assets/images/cover2.jpg'
 title:  "[CS224d] Lecture2 : Word2vec"
 date:   2017-03-27
 tags: NLP cs224n
-subclass: 'post tag-NLP tag-CS224n'
+subclass: 'post tag-NLP tag-cs224n'
 categories: 'joongkyunKim'
 navigation: True
 ---

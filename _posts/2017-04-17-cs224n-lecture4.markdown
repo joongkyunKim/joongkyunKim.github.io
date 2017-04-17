@@ -4,7 +4,7 @@ cover: 'assets/images/cover2.jpg'
 title:  "[CS224n] Lecture4 : Word Window Classification and Neural Network"
 date:   2017-04-17
 tags: NLP cs224n
-subclass: 'post tag-NLP tag-CS224n'
+subclass: 'post tag-NLP tag-cs224n'
 categories: 'joongkyunKim'
 navigation: True
 ---
