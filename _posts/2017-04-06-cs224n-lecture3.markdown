@@ -3,7 +3,7 @@ layout: post
 cover: 'assets/images/cover1.jpg'
 title:  "[CS224n] Lecture3 : GloVe: Global Vectors for Word Representation"
 date:   2017-04-06
-tags: NLP CS224n
+tags: NLP cs224n
 subclass: 'post tag-NLP tag-CS224n'
 categories: 'joongkyunKim'
 navigation: True
